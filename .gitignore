@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Session logs — contain personal paths and hostnames
+cli_log.md
+*.log
+win-compat/logs/
+
+# Steam credentials — NEVER commit this
+steam-install-private.sh
+*-private.sh
+*.env.local
+
+# Goldberg downloaded archives (large binaries)
+win-compat/installers/goldberg/
+win-compat/installers/dxvk-*/
+win-compat/installers/*.7z
+win-compat/installers/*.tar.gz
+win-compat/installers/*.zip
+
+# Wine prefixes — contain the full Windows environment (gigabytes, user-specific)
+win-compat/prefixes/
+
+# Stray editor/temp files
+*.swp
+*.swo
+*~
+\#*
