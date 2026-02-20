@@ -189,15 +189,26 @@ may also help but was not verified to resolve it automatically.
 ## Performance tips
 
 AoE2 HD runs through three translation layers (Rosetta 2 + Wine + wined3d),
-so some overhead is unavoidable. Biggest wins:
+so some overhead vs. native Windows is unavoidable. The launch script already
+applies the two biggest non-visual optimisations. In-game settings do the rest.
 
-| Setting | Where | Effect |
+**Already applied in `launch-aoe2-goldberg.sh`** — nothing to change:
+
+| Variable | Value | Why it helps |
 |---|---|---|
-| Lower resolution | In-game Options → Graphics | Biggest GPU impact |
-| Water quality → Low | In-game Options → Graphics | Second biggest |
-| Shadows → Off | In-game Options → Graphics | Noticeable gain |
-| `WINED3D_CSMT=1` | Already set in launch script | Uses extra CPU cores |
-| `WINEDEBUG=-all` | Already set in launch script | Removes logging overhead |
+| `WINEDEBUG` | `-all` | Silences all Wine debug logging. Without this, thousands of lines are printed to the terminal every second, burning meaningful CPU. |
+| `WINED3D_CSMT` | `1` | Enables wined3d Command Stream Multi-Threading — offloads D3D command processing to a second thread, making better use of M1 Max's many cores. |
+
+**In-game settings** (Options → Graphics) — AoE2 HD uses checkboxes, not quality
+sliders. Resolution is not set in-game — it follows your desktop resolution.
+
+| Setting | Action | Effect |
+|---|---|---|
+| Render 3D Water | **Uncheck** | Reverts water to the original 2D look; biggest GPU saving |
+| Antialias object shadows | **Uncheck** | Removes shadow edge smoothing; noticeable gain |
+| Vertical Sync | **Uncheck** | Removes frame-rate cap tied to display refresh; reduces input lag |
+| Desktop resolution | Lower via System Preferences | AoE2 HD follows OS resolution — lower it there, not in-game |
+| Map size | Choose smaller maps | "Ludakris" is 4× larger than "Giant" and tanks FPS significantly |
 
 ---
 

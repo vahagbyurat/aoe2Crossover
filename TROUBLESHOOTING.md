@@ -446,3 +446,52 @@ chmod +x ~/win-compat/scripts/*.sh ~/win-compat/scripts/winrun
 | 12 | Subscription screen hangs | Workshop API query with no Steam | **Ctrl+C** (confirmed); `offline = 1` in config.ini (unverified) |
 | 13 | Texture load failed | Wine d3dx9 can't convert 16-bit float formats | `winetricks d3dx9` (native Microsoft DLLs) |
 | 14 | Permission denied on scripts | No execute bit in workspace | Use `bash script.sh` or `chmod +x` |
+
+---
+
+## Performance optimisations applied
+
+Once the game was running, it was noticeably laggy. This is expected — three
+translation layers (Rosetta 2 + Wine + wined3d) all add overhead. The following
+changes were made and are now baked into `launch-aoe2-goldberg.sh`.
+
+### `WINEDEBUG=-all` — biggest CPU win
+
+The initial launch script used `WINEDEBUG=err+all,warn+module,warn+loaddll`.
+This caused Wine to print thousands of debug lines per second to the terminal —
+every DLL load, every unimplemented stub, every module warning. Writing all that
+output burns real CPU time. Setting `WINEDEBUG=-all` silences everything and
+gave a noticeable framerate improvement with no downside during normal play.
+
+To re-enable debug output for troubleshooting, temporarily change it in the
+launch script:
+
+```bash
+WINEDEBUG="err+all,warn+module,warn+loaddll" \
+```
+
+### `WINED3D_CSMT=1` — multi-core GPU command processing
+
+wined3d by default processes its internal D3D command stream on a single thread.
+Setting `WINED3D_CSMT=1` (Command Stream Multi-Threading) moves that work to a
+dedicated second thread, freeing the main thread and making better use of the
+M1 Max's performance cores. This is a safe flag with no known compatibility
+issues for AoE2 HD.
+
+### In-game graphics settings
+
+AoE2 HD Edition (2013) has a much simpler options menu than the Definitive
+Edition — graphics options are checkboxes, not quality sliders. There is no
+in-game resolution setting; the game follows whatever your desktop resolution
+is set to in System Preferences.
+
+| Setting | Action | Reason |
+|---|---|---|
+| Render 3D Water | **Uncheck** | Biggest GPU saving; reverts water to the original flat 2D look |
+| Antialias object shadows | **Uncheck** | Removes shadow edge smoothing; noticeable performance gain |
+| Vertical Sync | **Uncheck** | Removes the display-refresh frame cap; reduces input lag |
+| Desktop resolution | Lower via System Preferences | AoE2 HD renders at OS resolution — lower it there if needed |
+| Map size | Choose smaller maps | "Ludakris" is 4× the size of "Giant" and has a severe FPS impact |
+
+> Note: "Terrain quality", "Shadow quality", and resolution dropdowns are
+> **Definitive Edition** settings and do not exist in AoE2 HD Edition.

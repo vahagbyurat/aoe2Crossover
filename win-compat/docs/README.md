@@ -34,18 +34,22 @@ full-system emulation but is far slower.
 
 ```
 ~/win-compat/
-├── config.env          ← shared environment variables (source in any script)
+├── config.env                   ← shared env vars (Wine binary, MoltenVK ICD, etc.)
 ├── prefixes/
-│   └── aoe2/           ← Wine prefix (Windows 10, 64-bit)
+│   └── aoe2/                    ← Wine prefix (Windows 10, 64-bit)
 │       ├── drive_c/
 │       └── .dxvk_version
-├── installers/         ← downloaded archives (dxvk tarball, etc.)
+├── installers/                  ← downloaded archives (DXVK tarball, Goldberg, etc.)
 ├── scripts/
-│   ├── setup.sh        ← one-shot bootstrap (run once)
-│   ├── winrun          ← launch any EXE (the main tool you'll use)
-│   ├── setup-dxvk.sh   ← install/update DXVK in a prefix
-│   └── diagnose.sh     ← print full environment diagnostics
-└── logs/               ← per-run logs  (<prefix>_<timestamp>.log)
+│   ├── setup.sh                 ← one-shot bootstrap (run once)
+│   ├── winrun                   ← launch any EXE (the main tool you'll use)
+│   ├── setup-dxvk.sh            ← install/update DXVK in a prefix
+│   ├── diagnose.sh              ← print full environment diagnostics
+│   ├── steam-install.sh         ← SteamCMD game installer template (add your own creds)
+│   ├── install-goldberg.sh      ← download + install Goldberg Steam emulator
+│   ├── launch-aoe2-goldberg.sh  ← launch AoE2 HD (use this to play)
+│   └── launch-aoe2.sh           ← DEPRECATED — Steam -applaunch (does not work)
+└── logs/                        ← per-run logs (<prefix>_<timestamp>.log)
 ```
 
 ---
