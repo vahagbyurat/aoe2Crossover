@@ -347,27 +347,15 @@ AoE2 HD queries the Steam Workshop API at startup to validate subscribed mods.
 Without a real Steam connection, Goldberg's Workshop emulation either timed out
 very slowly or blocked waiting for a network response.
 
-**Confirmed working fix:** Press `Ctrl+C` in the terminal while the game is
-running. This sends SIGINT which interrupts the subscription check and drops
-straight to the main menu. The game continues normally from there.
+**Confirmed working fix:** Click the game window to make sure it has focus,
+then press `Ctrl+C`. This sends a cancel/interrupt keyboard event to the game
+which breaks out of the subscription check and drops straight to the main menu.
+The game continues normally from there.
 
 **Attempted fix (unverified):** Creating `steam_settings/config.ini` with
-`offline = 1` was suggested as a way to make Goldberg skip the Workshop query
-entirely, but this was never confirmed to resolve the hang automatically.
-The `config.ini` was created but Ctrl+C remained the only verified method.
-
-```bash
-cat > ".../age2hd/steam_settings/config.ini" << 'EOF'
-[user]
-SteamId = 76561198000000001
-AccountName = Player
-Language = english
-offline = 1
-
-[steam]
-appid = 221380
-EOF
-```
+`offline = 1` was tried as a way to make Goldberg skip the Workshop query
+entirely, but was never confirmed to resolve the hang automatically. Ctrl+C in
+the game window remains the only verified method.
 
 ---
 
@@ -443,7 +431,7 @@ chmod +x ~/win-compat/scripts/*.sh ~/win-compat/scripts/winrun
 | 9 | Goldberg download = HTML | Wrong GitLab permalink URL | Use gbe_fork on GitHub (`emu-win-release.7z`) |
 | 10 | `resources\...\retail-campaigns\` not found | Wrong working directory | `wine start /d "game dir"` |
 | 11 | "Failed to initialize draw system" | DXVK needs `geometryShader` + `shaderFloat64`, Metal doesn't have them | `WINEDLLOVERRIDES=d3d9=b;...` (use wined3d) |
-| 12 | Subscription screen hangs | Workshop API query with no Steam | **Ctrl+C** (confirmed); `offline = 1` in config.ini (unverified) |
+| 12 | Subscription screen hangs | Workshop API query with no Steam | **Ctrl+C in the game window** (confirmed); `offline = 1` in config.ini (unverified) |
 | 13 | Texture load failed | Wine d3dx9 can't convert 16-bit float formats | `winetricks d3dx9` (native Microsoft DLLs) |
 | 14 | Permission denied on scripts | No execute bit in workspace | Use `bash script.sh` or `chmod +x` |
 

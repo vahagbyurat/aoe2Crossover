@@ -25,12 +25,20 @@ API calls (file I/O, windowing, Direct3D, etc.) into their macOS equivalents.
 
 ### What about DXVK?
 
-DXVK (D3D → Vulkan) is installed by `setup.sh` and works for many games, but
-**AoE2 HD requires wined3d** instead. DXVK 2.x requires Vulkan 1.3; MoltenVK
-1.2.x only provides Vulkan 1.2. DXVK 1.10.3 (Vulkan 1.1+) works on MoltenVK
-but AoE2 HD still hits a `geometryShader` feature absence on Metal that causes
-"Failed to initialize draw system." wined3d's OpenGL→Metal path avoids this
-entirely. The launch script forces wined3d with `WINEDLLOVERRIDES="d3d9=b;..."`.
+**DXVK is not used by AoE2 HD and is not required for this setup.** The launch
+script explicitly overrides it with `WINEDLLOVERRIDES="d3d9=b;dxgi=b;..."`,
+which forces Wine's built-in `wined3d` renderer instead. AoE2 HD hits a
+`geometryShader` feature absence on Metal when DXVK is active, causing "Failed
+to initialize draw system." wined3d's OpenGL → Metal path avoids this entirely.
+
+`setup.sh` installs DXVK 1.10.3 into the prefix as part of a general Wine
+gaming setup (useful for other Windows games). If you are only setting this up
+for AoE2 HD you can safely skip `setup-dxvk.sh` — it has no effect on AoE2 HD.
+
+> **Note on the large winetricks download:** If you saw ~95 MB downloading
+> during Step 3, that was `winetricks d3dx9` pulling Microsoft's DirectX
+> redistributable — not DXVK. The `d3dx9` DLLs **are** required (they fix the
+> texture loading crash on new game start).
 
 ### What about Steam?
 
@@ -70,7 +78,7 @@ bash /path/to/aoeCrossover/bootstrap.sh
 - Installs: `wine-crossover`, `winetricks`, `molten-vk`, `vulkan-tools`,
   `cabextract`, `p7zip`, `qemu`
 - Creates the `~/win-compat/prefixes/aoe2/` Wine prefix (Windows 10, 64-bit)
-- Installs DXVK 1.10.3 into the prefix (used by other games; bypassed for AoE2 HD)
+- Installs DXVK 1.10.3 into the prefix (optional for AoE2 HD — bypassed at launch; useful for other games)
 
 After it finishes, reload your shell:
 
@@ -139,25 +147,7 @@ This script:
 6. Writes `steam_appid.txt` containing `221380`
 7. Creates `steam_settings/steam_interfaces.txt` with AoE2 HD interface strings
 
-### Step 5 — Configure Goldberg for offline mode
-
-Create `steam_settings/config.ini` to skip the Workshop subscription screen
-(which hangs indefinitely without a real Steam connection):
-
-```bash
-cat > "$HOME/win-compat/prefixes/aoe2/drive_c/Program Files (x86)/Steam/steamapps/common/age2hd/steam_settings/config.ini" << 'EOF'
-[user]
-SteamId = 76561198000000001
-AccountName = Player
-Language = english
-offline = 1
-
-[steam]
-appid = 221380
-EOF
-```
-
-### Step 6 — Launch the game
+### Step 5 — Launch the game
 
 ```bash
 bash ~/win-compat/scripts/launch-aoe2-goldberg.sh
@@ -180,9 +170,8 @@ bash ~/win-compat/scripts/launch-aoe2-goldberg.sh
 ```
 
 **If the "Validating Subscriptions" screen appears and hangs:** press `Ctrl+C`
-in the terminal — this skips past it directly to the main menu. This is the
-confirmed working method. The `offline = 1` setting in `config.ini` (Step 5)
-may also help but was not verified to resolve it automatically.
+while the **game window is focused** — this cancels the subscription check and
+drops straight to the main menu. This is the confirmed working method.
 
 ---
 
@@ -263,9 +252,10 @@ WINEPREFIX="$HOME/win-compat/prefixes/aoe2" winetricks d3dx9
 
 ### Subscription screen hangs forever
 
-Ensure `steam_settings/config.ini` exists and contains `offline = 1`. If it
-still hangs, press **Ctrl+C** in the terminal — the game skips straight to the
-main menu.
+Press **Ctrl+C** while the **game window is focused** — the game cancels the
+subscription check and jumps straight to the main menu. This is the only
+confirmed working fix. A `config.ini` with `offline = 1` was attempted but
+never verified to prevent the hang automatically.
 
 ### Game exits immediately (code 0) with no window
 

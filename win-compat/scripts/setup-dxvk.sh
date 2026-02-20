@@ -6,6 +6,11 @@
 # Wine prefix so that Direct3D 9/10/11 calls are translated to Vulkan.
 # On macOS, Vulkan is provided by MoltenVK (brew install molten-vk).
 #
+# NOTE: NOT required for AoE2 HD Edition.
+#   AoE2 HD uses wined3d (D3D9 → OpenGL → Metal), not DXVK. The launch
+#   script (launch-aoe2-goldberg.sh) overrides DXVK via WINEDLLOVERRIDES.
+#   Run this only if you intend to use this Wine prefix for other games.
+#
 # Usage:
 #   PREFIX_NAME=aoe2 ./setup-dxvk.sh               # install into aoe2 prefix
 #   PREFIX_NAME=aoe2 DXVK_VERSION=2.4 ./setup-dxvk.sh
