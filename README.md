@@ -326,7 +326,69 @@ bash ~/win-compat/scripts/diagnose.sh
 
 ---
 
-## Note on game ownership
+## Legal disclaimer
+
+**This project is not affiliated with, endorsed by, or associated with Microsoft
+Corporation, Xbox Game Studios, Forgotten Empires LLC, Valve Corporation, or any
+other rights holder of Age of Empires II HD Edition.** "Age of Empires" is a
+registered trademark of Microsoft Corporation. All game assets, game code, and
+related intellectual property belong to their respective owners.
+
+This repository contains only shell scripts, configuration files, and
+documentation. It does not contain, distribute, or reproduce any game files,
+game assets, or copyrighted content from Age of Empires II HD Edition or any
+other game. You must own a legitimate, purchased copy of Age of Empires II HD
+Edition (Steam App ID 221380) via your own Steam account to use this setup.
+
+### Purpose
+
+This is a personal, non-commercial quality-of-life utility. Its sole purpose is
+to help Mac users who **already own** Age of Empires II HD Edition on Steam run
+the game on Apple Silicon hardware, where no officially supported macOS client
+exists. This project is not monetised, not sold, and is provided free of charge
+with no warranty of any kind.
+
+### Third-party components
+
+All third-party software used or referenced by these scripts (Wine, DXVK,
+MoltenVK, Goldberg Steam Emulator, SteamCMD, winetricks, QEMU) is free and
+open-source and is governed by its own respective licence. See the
+[Credits & Licences](#credits--licences) table above for details. None of those
+projects are affiliated with this repository.
+
+The Goldberg Steam Emulator (`gbe_fork`) replaces the Steam API DLL solely to
+allow offline play on hardware where the Steam client cannot run. It is used
+here strictly within the bounds of personal, offline use by a legitimate owner
+of the game.
+
+### Licence (scripts in this repository)
+
+The shell scripts and configuration files in this repository are released under
+the **MIT Licence**:
+
+```
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### Note on game ownership
 
 This setup requires that you **own Age of Empires II HD Edition on Steam**.
 SteamCMD authenticates with your real Steam account to download the game files.
