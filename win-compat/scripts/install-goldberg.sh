@@ -203,8 +203,11 @@ echo " Settings : $SETTINGS_DIR/"
 echo ""
 echo " NEXT STEP — launch the game:"
 echo ""
-echo '   ~/win-compat/scripts/winrun aoe2 \
-     "C:/Program Files (x86)/Steam/steamapps/common/age2hd/AoK HD.exe"'
+echo '   bash ~/win-compat/scripts/launch-aoe2-goldberg.sh'
+echo ""
+echo " TIP: If a 'Validating Subscriptions' screen appears and hangs,"
+echo "      click the game window to focus it, then press Ctrl+C."
+echo "      The game will skip straight to the main menu."
 echo ""
 echo " If the game crashes immediately, re-run generate_interfaces:"
 echo '   ~/win-compat/scripts/winrun aoe2 \
