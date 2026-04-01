@@ -40,14 +40,34 @@ for AoE2 HD you can safely skip `setup-dxvk.sh` — it has no effect on AoE2 HD.
 > redistributable — not DXVK. The `d3dx9` DLLs **are** required (they fix the
 > texture loading crash on new game start).
 
-### What about Steam?
+### What about Steam? (Why Goldberg is necessary)
 
-SteamCMD (headless CLI) is used to install the game files. The Steam GUI client
-crashes on Wine because `steamwebhelper` requires `bcryptprimitives.dll` →
-`chrome_elf.dll` init chain that Wine does not support. Once installed, the game
-is launched with the **Goldberg Steam Emulator** (`gbe_fork`) — an open-source
-`steam_api.dll` replacement that satisfies the game's Steam DRM check without
-any Steam process running.
+**You must own the game on Steam.** SteamCMD (headless CLI) authenticates with
+your real Steam account to download the game files — this is the proof of
+purchase. Once the files are on disk, the natural next step is to launch the
+game the normal way: through Steam. Here is what actually happens when you try:
+
+1. **Direct launch** — running `AoK HD.exe` calls
+   `SteamAPI_RestartAppIfNecessary()`, which returns `true` because no Steam
+   client is running. The game immediately exits, expecting Steam to relaunch it.
+2. **Steam GUI via Wine** — running `steam.exe -applaunch 221380` fails because
+   `steamwebhelper.exe` (Steam's Chromium-based UI) requires
+   `bcryptprimitives.dll` → `chrome_elf.dll`, a Windows crypto chain that Wine
+   does not implement. Steam never initialises, so `-applaunch` never fires.
+
+Both paths are dead ends. The deprecated `launch-aoe2.sh` in this repo is the
+artifact of attempt #2 — it exists solely to document that it was tried and does
+not work. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) errors #7 and #8 for
+the full debug traces.
+
+**Goldberg is the workaround, not the starting point.** The **Goldberg Steam
+Emulator** (`gbe_fork`) is an open-source `steam_api.dll` replacement whose
+`SteamAPI_RestartAppIfNecessary()` always returns `false`, letting the game
+proceed without a running Steam client. It exists in this setup *only* because
+the two legitimate launch paths above are technically impossible on Wine/macOS.
+The game files themselves were downloaded via your authenticated Steam account —
+Goldberg does not bypass purchase verification, it bypasses a runtime client
+check that cannot succeed on this platform.
 
 ---
 
@@ -131,6 +151,13 @@ and takes a few minutes. The `WARNING; possible 5960 extra bytes` lines from
 `cabextract` are harmless noise.
 
 ### Step 4 — Install the Goldberg Steam Emulator
+
+At this point the game files are on disk (downloaded via your authenticated
+Steam account in Step 2), but the game cannot launch — it calls Steam's DRM
+check (`SteamAPI_RestartAppIfNecessary`), and without a running Steam client
+(which cannot run on Wine — see ["What about Steam?"](#what-about-steam-why-goldberg-is-necessary)
+above), the game silently exits. Goldberg replaces that DRM stub so the game
+can start.
 
 ```bash
 bash ~/win-compat/scripts/install-goldberg.sh
@@ -347,9 +374,14 @@ open-source and is governed by its own respective licence. See the
 projects are affiliated with this repository.
 
 The Goldberg Steam Emulator (`gbe_fork`) replaces the Steam API DLL solely to
-allow offline play on hardware where the Steam client cannot run. It is used
-here strictly within the bounds of personal, offline use by a legitimate owner
-of the game.
+work around a technical limitation: Wine on macOS cannot run the Steam client
+(`steamwebhelper` crashes due to unimplemented Windows crypto primitives), which
+means the game's runtime DRM check (`SteamAPI_RestartAppIfNecessary`) can never
+succeed — even though the game was legitimately purchased and downloaded via
+SteamCMD using the owner's authenticated Steam account. Goldberg does not bypass
+purchase verification; it bypasses a runtime client check that is technically
+impossible on this platform. It is used here strictly within the bounds of
+personal, offline use by a legitimate owner of the game.
 
 ### Licence (scripts in this repository)
 

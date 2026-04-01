@@ -16,9 +16,32 @@ mkdir -p "$LOGDIR"
 GAME_WIN_PATH="C:/Program Files (x86)/Steam/steamapps/common/age2hd/AoK HD.exe"
 GAME_DIR="$HOME/win-compat/prefixes/aoe2/drive_c/Program Files (x86)/Steam/steamapps/common/age2hd"
 PREFIX="$HOME/win-compat/prefixes/aoe2"
-WINE_BIN="/Applications/Wine Crossover.app/Contents/Resources/wine/bin/wine64"
+
+# Source config.env for auto-detected WINE_BIN (same logic as winrun/setup.sh)
+CONFIG_ENV="$HOME/win-compat/config.env"
+if [[ -f "$CONFIG_ENV" ]]; then
+  # shellcheck source=../config.env
+  source "$CONFIG_ENV"
+fi
+
+# Fallback Wine detection if config.env didn't resolve it
+if [[ -z "${WINE_BIN:-}" ]]; then
+  for p in \
+      "/Applications/Wine Crossover.app/Contents/Resources/wine/bin/wine64" \
+      "/Applications/Wine Stable.app/Contents/Resources/wine/bin/wine64" \
+      "$(brew --prefix 2>/dev/null || echo /opt/homebrew)/bin/wine64" \
+      "$(brew --prefix 2>/dev/null || echo /opt/homebrew)/bin/wine"; do
+    if [[ -x "$p" ]]; then WINE_BIN="$p"; break; fi
+  done
+fi
 
 # Sanity checks
+if [[ -z "${WINE_BIN:-}" || ! -x "$WINE_BIN" ]]; then
+  echo "[ERROR] Wine not found. Install via:"
+  echo "        brew install --cask --no-quarantine wine-crossover"
+  exit 1
+fi
+
 if [[ ! -f "$GAME_DIR/steam_api.dll" ]]; then
   echo "[ERROR] $GAME_DIR/steam_api.dll not found."
   echo "        Run install-goldberg.sh first."
@@ -27,11 +50,6 @@ fi
 
 if [[ ! -f "$GAME_DIR/steam_appid.txt" ]]; then
   echo "[ERROR] steam_appid.txt missing — run install-goldberg.sh first."
-  exit 1
-fi
-
-if [[ ! -f "$WINE_BIN" ]]; then
-  echo "[ERROR] Wine not found at: $WINE_BIN"
   exit 1
 fi
 

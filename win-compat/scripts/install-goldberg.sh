@@ -2,10 +2,18 @@
 # =============================================================================
 # install-goldberg.sh — Install Goldberg Steam Emulator for AoE2 HD
 #
-# Downloads gbe_fork (active Goldberg fork) and replaces steam_api.dll
-# in the AoE2 HD game directory so the game launches without Steam DRM.
+# WHY THIS IS NEEDED:
+#   The game was downloaded via SteamCMD using your authenticated Steam account
+#   (proof of purchase). However, the game's EXE calls
+#   SteamAPI_RestartAppIfNecessary() at startup, which requires a running Steam
+#   client. Wine on macOS cannot run Steam's GUI (steamwebhelper crashes on
+#   missing bcryptprimitives.dll). Goldberg replaces steam_api.dll with an
+#   open-source stub that lets the game start without a Steam client process.
 #
-# Run this ONCE before launching the game.
+# Downloads gbe_fork (active Goldberg fork) and replaces steam_api.dll
+# in the AoE2 HD game directory.
+#
+# PREREQUISITE: Run steam-install.sh first to download the game files.
 # =============================================================================
 set -eo pipefail
 
@@ -33,7 +41,14 @@ echo "============================================================"
 if [[ ! -d "$GAME_DIR" ]]; then
   echo "[ERROR] Game directory not found:"
   echo "        $GAME_DIR"
-  echo "        Run steam-install.sh first."
+  echo "        Run steam-install.sh first to download the game via SteamCMD."
+  exit 1
+fi
+
+if [[ ! -f "$GAME_DIR/AoK HD.exe" ]]; then
+  echo "[ERROR] AoK HD.exe not found in game directory."
+  echo "        The game may not have downloaded completely."
+  echo "        Re-run steam-install.sh to finish the SteamCMD download."
   exit 1
 fi
 

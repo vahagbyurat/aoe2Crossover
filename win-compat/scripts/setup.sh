@@ -294,20 +294,42 @@ section "Setup Complete"
 
 cat <<'EOF'
 
-Quick usage
------------
+NEXT STEPS — AoE2 HD setup
+---------------------------
 
-# Launch any EXE inside the aoe2 prefix:
-  winrun aoe2 /path/to/game.exe
+  1. Reload your shell so winrun is in PATH:
+       source ~/.zshrc
 
-# Launch notepad (built-in test):
-  winrun aoe2 notepad
+  2. (Optional) Verify Wine works:
+       winrun aoe2 notepad
 
-# Launch winecfg for the aoe2 prefix:
-  winrun aoe2 winecfg
+  3. Install the game via SteamCMD — copy the template, add your creds, run it:
+       cp ~/win-compat/scripts/steam-install.sh ~/steam-install-private.sh
+       # edit ~/steam-install-private.sh with your Steam username + password
+       bash ~/steam-install-private.sh
 
-# Create a new prefix:
-  winrun myprefix /path/to/installer.exe
+  4. Install Windows runtime dependencies:
+       WINEPREFIX="$HOME/win-compat/prefixes/aoe2" winetricks vcrun2013 vcrun2015
+       WINEPREFIX="$HOME/win-compat/prefixes/aoe2" winetricks d3dx9
+
+  5. Install the Goldberg Steam Emulator (needed because Steam's client
+     cannot run on Wine — see README for details):
+       bash ~/win-compat/scripts/install-goldberg.sh
+
+  6. Launch the game:
+       bash ~/win-compat/scripts/launch-aoe2-goldberg.sh
+
+Quick usage (general)
+---------------------
+
+  # Launch any EXE inside the aoe2 prefix:
+    winrun aoe2 /path/to/game.exe
+
+  # Launch winecfg for the aoe2 prefix:
+    winrun aoe2 winecfg
+
+  # Create a new prefix for another game:
+    winrun myprefix /path/to/installer.exe
 
 Environment
 -----------
